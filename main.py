@@ -196,38 +196,6 @@ async def detect_deepfake(image: UploadFile = File(...)):
         return {"status": "success", "score": max_diff, "analysis": analysis}
     except Exception as e:
         return {"status": "error", "message": "Could not analyze image format."}
-
-# --- 7. Cyber AI Chatbot (Fixed) ---
-@app.post("/api/chat")
-async def super_chatbot(request: Request):
-    form = await request.form()
-    message = form.get("message", "")
-    file = form.get("file")
-    
-    if not model:
-        return {"reply": "CyberBot Error: AI Model બરાબર લોડ થયું નથી. Render માં API Key ચેક કરો."}
-    
-    try:
-        file_context = ""
-        if hasattr(file, 'filename') and file.filename:
-            content = await file.read()
-            try:
-                text_content = content.decode('utf-8', errors='ignore')
-                file_context = f"\n\n[Attached File: {file.filename}\nContent:\n{text_content[:2000]}]"
-            except:
-                file_context = f"\n\n[Attached Binary File: {file.filename}]"
-
-        system_prompt = f"""
-        You are 'CyberBot', a strict Cybersecurity & Forensics AI.
-        Answer the user's query professionally. If they upload a file, analyze it.
-        User Query: {message} {file_context}
-        """
-        response = model.generate_content(system_prompt)
-        return {"reply": response.text}
-    except Exception as e:
-        return {"reply": f"CyberBot Error: API સાથે કનેક્ટ થઈ શક્યું નથી. એરર: {str(e)}"}
-
-# --- લેટેસ્ટ FastAPI સિન્ટેક્સ (HTML બતાવવા માટે) ---
 @app.get("/", response_class=HTMLResponse)
 async def serve_frontend(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
