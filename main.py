@@ -37,7 +37,7 @@ model = None
 try:
     if GEMINI_API_KEY:
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-pro')
 except Exception as e:
     print(f"AI Model Error: {e}")
 
@@ -144,8 +144,15 @@ async def add_watermark(image: UploadFile = File(...), text: str = Form(...)):
 # --- 5. Reverse Image Search (Google Lens via SerpApi) - FIXED ---
 @app.post("/api/reverse_search")
 async def reverse_image(request: Request, image: UploadFile = File(...)):
-    if not SERPAPI_KEY:
-         return {"status": "error", "message": "API Key is missing in Render Environment Variables."}
+    # ... vachche no code emnam rakhvo ...
+    base_url = str(request.base_url).rstrip("/")
+    public_image_url = f"{base_url}/download/{image.filename}"
+
+    params = {
+        "engine": "google_lens",
+        "url": public_image_url, 
+        "api_key": SERPAPI_KEY
+    }
     
     file_path = os.path.join(UPLOAD_DIR, image.filename)
     with open(file_path, "wb") as f:
