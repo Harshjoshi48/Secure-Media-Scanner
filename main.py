@@ -144,46 +144,24 @@ async def add_watermark(image: UploadFile = File(...), text: str = Form(...)):
 # --- 5. Reverse Image Search (Google Lens via SerpApi) - FIXED ---
 @app.post("/api/reverse_search")
 async def reverse_image(request: Request, image: UploadFile = File(...)):
-    # ... vachche no code emnam rakhvo ...
-    base_url = str(request.base_url).rstrip("/")
-    public_image_url = f"{base_url}/download/{image.filename}"
+    if not SERPAPI_KEY:
+         return {"status": "error", "message": "API Key is missing in .env file."}
 
-    params = {
-        "engine": "google_lens",
-        "url": public_image_url, 
-        "api_key": SERPAPI_KEY
-    }
-    
     file_path = os.path.join(UPLOAD_DIR, image.filename)
     with open(file_path, "wb") as f:
-        f.write(await image.read())
-        
+        f.write(await image.read()) # file.read() ni jagya e image.read() karyu
+
     try:
-        # ડાયનેમિક લિંક જનરેટ કરો જેથી SerpApi તમારા સર્વર પરથી ફોટો વાંચી શકે
+        # Render na server parथी image ni link banavse
         base_url = str(request.base_url).rstrip("/")
         public_image_url = f"{base_url}/download/{image.filename}"
 
         search_url = "https://serpapi.com/search.json"
         params = {
             "engine": "google_lens",
-            "url": public_image_url, # હાર્ડકોડેડ લિંક કાઢીને યુઝરની ફાઈલની લિંક મૂકી
+            "url": public_image_url, # Navo dynamic URL
             "api_key": SERPAPI_KEY
         }
-        response = requests.get(search_url, params=params)
-        data = response.json()
-        
-        matches = []
-        if "visual_matches" in data:
-            for item in data["visual_matches"][:6]:
-                matches.append({
-                    "title": item.get("title", "Unknown Source"),
-                    "url": item.get("link", "#"),
-                    "thumbnail": item.get("thumbnail", "")
-                })
-        return {"status": "success", "results": matches}
-    except Exception as e:
-         return {"status": "error", "message": f"Search failed: {str(e)}"}
-
 # --- 6. Deepfake Detection (ELA Fix) ---
 @app.post("/api/deepfake")
 async def detect_deepfake(image: UploadFile = File(...)):
