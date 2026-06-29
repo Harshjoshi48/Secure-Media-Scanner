@@ -8,13 +8,11 @@ import os
 import socket
 import ssl
 import base64
-import serpapi 
 from datetime import datetime
-import google.generativeai as genai
 from dotenv import load_dotenv
 
 # .env ફાઈલમાંથી ડેટા લોડ કરો (લોકલ ટેસ્ટિંગ માટે)
-load_dotenv()
+
 
 # --- લેટેસ્ટ અને સેફ Path સેટઅપ ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -27,27 +25,8 @@ os.makedirs(TEMPLATE_DIR, exist_ok=True)
 app = FastAPI(title="CyberVault Pro - Production Ready")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
-# ==========================================
-# કી હવે .env અથવા Render ના Environment Variables માંથી આવશે
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-SERPAPI_KEY = os.getenv("SERPAPI_KEY")
-# ==========================================
 
-# AI મોડેલ લોડ કરવા માટે સેફ-બ્લોક
-model = None
-try:
-    if GEMINI_API_KEY:
-        genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-pro')
-except Exception as e:
-    print(f"AI Model Error: {e}")
 
-@app.get("/download/{filename}")
-async def download_file(filename: str):
-    file_path = os.path.join(UPLOAD_DIR, filename)
-    if os.path.exists(file_path):
-        return FileResponse(path=file_path, filename=filename, media_type='application/octet-stream')
-    return {"error": "File not found."}
 
 # --- 1. Advanced Image Forensics ---
 @app.post("/api/forensics")
@@ -142,36 +121,8 @@ async def add_watermark(image: UploadFile = File(...), text: str = Form(...)):
     watermarked.save(os.path.join(UPLOAD_DIR, out_filename))
     return {"status": "success", "message": "Watermark Applied", "download_link": f"/download/{out_filename}"}
 
-# --- 5. Reverse Image Search (Google Lens via SerpApi) - FIXED --
-@app.post("/api/reverse_search")
-async def reverse_image_search(image: UploadFile = File(...)):
-    # 1. ફાઈલને સેવ કરો
-    file_path = os.path.join(UPLOAD_DIR, image.filename)
-    with open(file_path, "wb") as f:
-        f.write(await image.read())
-    
-    # 2. SerpApi થી સર્ચ કરો
-    try:
-        # તમારી કી અહીં સીધી લખવાને બદલે .env માંથી લો
-        api_key = os.getenv("SERPAPI_KEY") 
-        client = serpapi.Client(api_key=api_key)
-        
-        # નોંધ: અહીં તમે ડાયરેક્ટ ઈમેજ ફાઈલ નથી મોકલી શકતા, 
-        # તમારે ફોટાની પબ્લિક URL (જેમ કે Imgur લિંક) વાપરવી પડશે.
-        # અત્યારે ટેસ્ટિંગ માટે તમે હાર્ડકોડેડ URL વાપરી શકો:
-        results = client.search({
-            "engine": "google_lens",
-            "url": "https://i.imgur.com/HBrB8p0.jpeg" 
-        })
-        
-        return {"status": "success", "matches": results.get("visual_matches", [])}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-    
 
-    
-
-# --- 6. Deepfake Detection (ELA Fix) ---
+# --.5 Deepfake Detection (ELA Fix) ---
 @app.post("/api/deepfake")
 async def detect_deepfake(image: UploadFile = File(...)):
     img_path = os.path.join(UPLOAD_DIR, image.filename)
