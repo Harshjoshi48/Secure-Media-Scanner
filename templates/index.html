@@ -1,140 +1,114 @@
 <!DOCTYPE html>
-<html lang="gu">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cybersecurity & Forensics Toolkit</title>
+    <title>CyberVault Pro | Security Toolkit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>.tab-content { display: none; } .active-tab { display: block; }</style>
 </head>
-<body class="bg-gray-900 text-gray-100 flex h-screen overflow-hidden font-sans">
+<body class="bg-gray-900 text-gray-100 flex flex-col h-screen overflow-hidden font-sans">
 
-    <aside class="w-72 bg-gray-800 border-r border-gray-700 flex flex-col">
-        <div class="p-6 border-b border-gray-700 text-2xl font-bold text-blue-500">
-            <i class="fas fa-shield-virus mr-2"></i>CyberVault Pro
-        </div>
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <button onclick="showTab('forensics')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-camera mr-2"></i> Metadata Extractor</button>
-            <button onclick="showTab('ssl')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-lock mr-2"></i> SSL Checker</button>
-            <button onclick="showTab('crypto')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-file-shield mr-2"></i> Encrypt/Decrypt</button>
-            <button onclick="showTab('watermark')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-copyright mr-2"></i> Watermark</button>
-            <button onclick="showTab('deepfake')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-user-secret mr-2"></i> Deepfake Detector</button>
-            <button onclick="showTab('info')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-info-circle mr-2"></i> Project & Student Info
-</button>
-        </nav>
-    </aside>
+    <div class="flex flex-1 overflow-hidden">
+        <aside class="w-72 bg-gray-800 border-r border-gray-700 flex flex-col">
+            <div class="p-6 border-b border-gray-700 text-2xl font-bold text-blue-500">
+                <i class="fas fa-shield-virus mr-2"></i>CyberVault Pro
+            </div>
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <button onclick="showTab('forensics')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-camera mr-2"></i> Metadata Extractor</button>
+                <button onclick="showTab('ssl')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-lock mr-2"></i> SSL Checker</button>
+                <button onclick="showTab('crypto')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-file-shield mr-2"></i> Encrypt/Decrypt</button>
+                <button onclick="showTab('watermark')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-copyright mr-2"></i> Watermark</button>
+                <button onclick="showTab('deepfake')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-user-secret mr-2"></i> Deepfake Detector</button>
+                <button onclick="showTab('info')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-info-circle mr-2"></i> Project & Student Info</button>
+            </nav>
+        </aside>
 
-    <main class="flex-1 overflow-y-auto p-10 bg-gray-900">
-        
-        <div id="forensics" class="tab-content active-tab">
-            <h2 class="text-3xl font-bold mb-4 text-blue-400">Advanced Metadata Extractor</h2>
-            <p class="text-gray-400 mb-6 text-sm italic">
-        This tool analyzes the hidden data within images, such as camera settings, 
-        resolution, and geolocation, ensuring digital privacy and forensic verification.
-            </p>
-            <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
-                <form onsubmit="submitForm(event, '/api/forensics', 'forensicResult')">
-                    <input type="file" name="file" class="w-full bg-gray-700 p-2 rounded mb-4" required>
-                    <button type="submit" class="bg-blue-500 px-6 py-2 rounded font-bold w-full">Deep Extract Data</button>
-                </form>
-                <div id="forensicResult" class="mt-4 text-sm text-green-300 bg-black p-4 rounded hidden overflow-x-auto"></div>
+        <main class="flex-1 overflow-y-auto p-10 bg-gray-900">
+            <div id="forensics" class="tab-content active-tab">
+                <h2 class="text-3xl font-bold mb-2 text-blue-400">Advanced Metadata Extractor</h2>
+                <p class="text-gray-400 mb-6 text-sm italic">This tool analyzes hidden image metadata for forensic verification.</p>
+                <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 max-w-2xl">
+                    <form onsubmit="submitForm(event, '/api/forensics', 'forensicResult')">
+                        <input type="file" name="file" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                        <button type="submit" class="bg-blue-500 px-6 py-2 rounded font-bold w-full">Extract Data</button>
+                    </form>
+                    <div id="forensicResult" class="mt-4 text-sm text-green-300 bg-black p-4 rounded hidden overflow-x-auto"></div>
+                </div>
             </div>
-        </div>
 
-        <div id="ssl" class="tab-content">
-            <h2 class="text-3xl font-bold mb-4 text-green-400">SSL Certificate Checker</h2>
-            <p class="text-gray-400 mb-6 text-sm italic">This utility audits website security by verifying SSL/TLS certificates, checking for expiration dates, and assigning a security grade based on certificate validity</p>
-            <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
-                <form onsubmit="submitForm(event, '/api/ssl_check', 'sslResult')">
-                    <input type="text" name="hostname" placeholder="google.com" class="w-full bg-gray-700 p-3 rounded mb-4" required>
-                    <button type="submit" class="bg-green-500 px-6 py-2 rounded font-bold w-full">Analyze SSL</button>
-                </form>
-                <div id="sslResult" class="mt-4 hidden"></div>
+            <div id="ssl" class="tab-content">
+                <h2 class="text-3xl font-bold mb-2 text-green-400">SSL Certificate Checker</h2>
+                <p class="text-gray-400 mb-6 text-sm italic">Audits website security by verifying SSL/TLS certificates.</p>
+                <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
+                    <form onsubmit="submitForm(event, '/api/ssl_check', 'sslResult')">
+                        <input type="text" name="hostname" placeholder="google.com" class="w-full bg-gray-700 p-3 rounded mb-4" required>
+                        <button type="submit" class="bg-green-500 px-6 py-2 rounded font-bold w-full">Analyze SSL</button>
+                    </form>
+                    <div id="sslResult" class="mt-4 hidden"></div>
+                </div>
             </div>
-        </div>
 
-        <div id="crypto" class="tab-content">
-            <h2 class="text-3xl font-bold mb-4 text-red-400">File Encrypt / Decrypt</h2>
-            <p class="text-gray-400 mb-6 text-sm italic">Uses AES-based encryption to secure your files. This ensures that sensitive data remains unreadable to unauthorized users without the correct password</p>
-            <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
-                <form onsubmit="submitForm(event, '/api/crypto', 'cryptoResult')">
-                    <input type="file" name="file" class="w-full bg-gray-700 p-2 rounded mb-4" required>
-                    <input type="password" name="password" placeholder="Secret Key (Password)" class="w-full bg-gray-700 p-2 rounded mb-4" required>
-                    <select name="action" class="w-full bg-gray-700 p-2 rounded mb-4">
-                        <option value="encrypt">Encrypt (Lock)</option>
-                        <option value="decrypt">Decrypt (Unlock)</option>
-                    </select>
-                    <button type="submit" class="bg-red-500 px-6 py-2 rounded font-bold w-full">Process File</button>
-                </form>
-                <div id="cryptoResult" class="mt-4 hidden"></div>
+            <div id="crypto" class="tab-content">
+                <h2 class="text-3xl font-bold mb-2 text-red-400">File Encrypt / Decrypt</h2>
+                <p class="text-gray-400 mb-6 text-sm italic">Uses AES-based encryption to secure your files with a password.</p>
+                <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
+                    <form onsubmit="submitForm(event, '/api/crypto', 'cryptoResult')">
+                        <input type="file" name="file" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                        <input type="password" name="password" placeholder="Secret Key" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                        <select name="action" class="w-full bg-gray-700 p-2 rounded mb-4">
+                            <option value="encrypt">Encrypt (Lock)</option>
+                            <option value="decrypt">Decrypt (Unlock)</option>
+                        </select>
+                        <button type="submit" class="bg-red-500 px-6 py-2 rounded font-bold w-full">Process File</button>
+                    </form>
+                    <div id="cryptoResult" class="mt-4 hidden text-green-400"></div>
+                </div>
             </div>
-        </div>
 
-        <div id="watermark" class="tab-content">
-            <h2 class="text-3xl font-bold mb-4 text-purple-400">Digital Watermarking</h2>
-             <p class="text-gray-400 mb-6 text-sm italic">Protects your intellectual property by embedding a visible watermark text onto your images, helping to establish ownership and prevent unauthorized use</p>
-            <p class="text-gray-400 mb-6 text-sm italic"></p>
-            <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
-                <form onsubmit="submitForm(event, '/api/watermark', 'watermarkResult')">
-                    <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
-                    <input type="text" name="text" placeholder="Watermark Text" class="w-full bg-gray-700 p-2 rounded mb-4" required>
-                    <button type="submit" class="bg-purple-500 px-6 py-2 rounded font-bold w-full">Apply Watermark</button>
-                </form>
-                <div id="watermarkResult" class="mt-4 hidden"></div>
+            <div id="watermark" class="tab-content">
+                <h2 class="text-3xl font-bold mb-2 text-purple-400">Digital Watermarking</h2>
+                <p class="text-gray-400 mb-6 text-sm italic">Embeds a visible watermark to protect intellectual property.</p>
+                <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
+                    <form onsubmit="submitForm(event, '/api/watermark', 'watermarkResult')">
+                        <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                        <input type="text" name="text" placeholder="Watermark Text" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                        <button type="submit" class="bg-purple-500 px-6 py-2 rounded font-bold w-full">Apply Watermark</button>
+                    </form>
+                    <div id="watermarkResult" class="mt-4 hidden text-green-400"></div>
+                </div>
             </div>
-        </div>
 
-        <div id="deepfake" class="tab-content">
-            <h2 class="text-3xl font-bold mb-4 text-pink-400">Deepfake Detection</h2>
-            <p class="text-gray-400 mb-6 text-sm italic">Utilizes Error Level Analysis (ELA) to identify discrepancies in image compression, allowing you to detect if an image has been digitally altered or photoshopped."</p>
-            <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
-                <form onsubmit="submitForm(event, '/api/deepfake', 'deepfakeResult')">
-                    <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
-                    <button type="submit" class="bg-pink-500 px-6 py-2 rounded font-bold w-full">Run Analysis</button>
-                </form>
-                <div id="deepfakeResult" class="mt-4 text-sm text-pink-300 bg-black p-4 rounded hidden break-words"></div>
+            <div id="deepfake" class="tab-content">
+                <h2 class="text-3xl font-bold mb-2 text-pink-400">Deepfake Detection</h2>
+                <p class="text-gray-400 mb-6 text-sm italic">Uses Error Level Analysis (ELA) to detect image manipulation.</p>
+                <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
+                    <form onsubmit="submitForm(event, '/api/deepfake', 'deepfakeResult')">
+                        <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                        <button type="submit" class="bg-pink-500 px-6 py-2 rounded font-bold w-full">Run Analysis</button>
+                    </form>
+                    <div id="deepfakeResult" class="mt-4 text-sm text-pink-300 bg-black p-4 rounded hidden"></div>
+                </div>
             </div>
-        </div>
-        <div id="info" class="tab-content">
-    <h2 class="text-3xl font-bold mb-8 text-yellow-400">Student Profile</h2>
-    
-    <div class="max-w-md bg-gray-800 rounded-xl shadow-2xl border border-gray-700 overflow-hidden transform transition hover:scale-105">
-        <div class="bg-blue-600 p-6 text-center">
-            <div class="w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center text-4xl text-blue-600 mb-4 shadow-lg">
-                <i class="fas fa-user-graduate"></i>
+
+            <div id="info" class="tab-content">
+                <h2 class="text-3xl font-bold mb-8 text-yellow-400">Student Profile</h2>
+                <div class="max-w-md bg-gray-800 rounded-xl shadow-2xl border border-gray-700 p-6">
+                    <h3 class="text-2xl font-bold text-white mb-2">Joshi Harsh Navinbhai</h3>
+                    <p class="text-blue-400 italic mb-4">CSE Student - 5th Semester</p>
+                    <div class="space-y-3 text-gray-300">
+                        <p><i class="fas fa-envelope w-6 text-yellow-400"></i> hj195344@gmail.com</p>
+                        <p><i class="fas fa-phone w-6 text-yellow-400"></i> 9558825116</p>
+                        <p><i class="fas fa-university w-6 text-yellow-400"></i> K.D.POLYTECHNIC, PATAN</p>
+                    </div>
+                </div>
             </div>
-            <h3 class="text-2xl font-bold text-white">Joshi Harsh Navinbhai</h3>
-            <p class="text-blue-100 italic">CSE Student - 5th Semester</p>
-        </div>
-        
-        <div class="p-6 space-y-4">
-            <div class="flex items-center text-gray-300">
-                <i class="fas fa-envelope w-8 text-yellow-400"></i>
-                <span>hj195344@gmail.com</span>
-            </div>
-            <div class="flex items-center text-gray-300">
-                <i class="fas fa-phone w-8 text-yellow-400"></i>
-                <span>9558825116</span>
-            </div>
-            <div class="flex items-center text-gray-300">
-                <i class="fas fa-university w-8 text-yellow-400"></i>
-                <span>K.D.POLYTECHNIC, PATAN </span>
-            </div>
-            <div class="flex items-start text-gray-300">
-                <i class="fas fa-map-marker-alt w-8 text-yellow-400 mt-1"></i>
-                <span>Opposite T. B. Hospital,Krishnanagar Society,Hemchandracharya North Gujarat University Road,Patan, Gujarat - 384265</span>
-            </div>
-        </div>
-        
-        <div class="bg-gray-700 p-4 text-center text-xs text-gray-400">
-            Diploma in Computer Science & Engineering (CSE)
-        </div>
+        </main>
     </div>
-</div>
-    <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 p-3 text-center text-gray-500 text-xs border-t border-gray-800">
-    CyberVault Pro © 2026 | Developed for CSE Semester 5  student.
-</footer>
-    </main>
+
+    <footer class="bg-gray-800 p-3 text-center text-gray-500 text-xs border-t border-gray-700">
+        CyberVault Pro © 2026 | Developed for CSE Semester 5 Student
+    </footer>
 
     <script>
         function showTab(tabId) {
@@ -143,37 +117,35 @@
         }
 
         async function submitForm(e, url, resultId) {
-    e.preventDefault();
-    const resDiv = document.getElementById(resultId);
-    resDiv.classList.remove('hidden');
-    resDiv.innerHTML = `<span class="text-yellow-400">Processing... please wait.</span>`;
+            e.preventDefault();
+            const resDiv = document.getElementById(resultId);
+            resDiv.classList.remove('hidden');
+            resDiv.innerHTML = `<span class="text-yellow-400">Processing... please wait.</span>`;
 
-    const formData = new FormData(e.target);
-    try {
-        const res = await fetch(url, { method: 'POST', body: formData });
-
-        // જો યુઆરએલ ક્રિપ્ટો (Encryption/Decryption) કે વોટરમાર્ક હોય
-        if (url === '/api/crypto' || url === '/api/watermark') {
-            const blob = await res.blob(); // ફાઈલને બાઈનરી ડેટા (Blob) તરીકે લો
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = "processed_file"; // ફાઈલનું નામ
-            link.click();
-            resDiv.innerHTML = `<span class="text-green-400">File processed and download started!</span>`;
-        } 
-        // જો SSL ચેક જેવું સામાન્ય JSON રિઝલ્ટ હોય
-        else {
-            const data = await res.json();
-            if (url === '/api/ssl_check' && data.status === "success") {
-                resDiv.innerHTML = `<div class="p-4 bg-gray-900 border border-green-500">Security Grade: ${data.SECURITY_GRADE}<br>Domain: ${data.DOMAIN}</div>`;
-            } else {
-                resDiv.innerHTML = `<pre class="text-xs">${JSON.stringify(data, null, 2)}</pre>`;
+            const formData = new FormData(e.target);
+            try {
+                const res = await fetch(url, { method: 'POST', body: formData });
+                if (url === '/api/crypto' || url === '/api/watermark' || url === '/api/deepfake') {
+                    // For file download responses
+                    const blob = await res.blob();
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = "processed_file";
+                    link.click();
+                    resDiv.innerHTML = `<span class="text-green-400">Process successful! Download started.</span>`;
+                } else {
+                    // For JSON responses
+                    const data = await res.json();
+                    if (url === '/api/ssl_check') {
+                        resDiv.innerHTML = `<div class="p-4 bg-gray-900 border border-green-500">Grade: ${data.SECURITY_GRADE}<br>Domain: ${data.DOMAIN}</div>`;
+                    } else {
+                        resDiv.innerHTML = `<pre class="text-xs">${JSON.stringify(data, null, 2)}</pre>`;
+                    }
+                }
+            } catch (err) {
+                resDiv.innerHTML = `<span class="text-red-500">Error processing request.</span>`;
             }
         }
-    } catch (err) {
-        resDiv.innerHTML = `<span class="text-red-500">Error: Could not process request.</span>`;
-    }
-}
     </script>
 </body>
 </html>
