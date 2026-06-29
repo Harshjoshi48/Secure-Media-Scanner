@@ -100,7 +100,7 @@ async def file_crypto(file: UploadFile = File(...), password: str = Form(...), a
         processed_data = fernet.encrypt(original_data) if action == "encrypt" else fernet.decrypt(original_data)
         with open(output_path, "wb") as f:
             f.write(processed_data)
-        return {"status": "success", "message": f"File {action}ed successfully!", "download_link": f"/download/{output_filename}"}
+      return FileResponse(path=output_path, media_type='application/octet-stream', filename=output_filename)
     except Exception:
         return {"status": "error", "message": "Decryption Failed! Wrong password or corrupted file."}
 
