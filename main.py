@@ -12,7 +12,7 @@ from datetime import datetime
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# .env ફાઈલમાંથી ડેટા લોડ કરો (સિક્યોરિટી માટે)
+# .env ફાઈલમાંથી ડેટા લોડ કરો (લોકલ ટેસ્ટિંગ માટે)
 load_dotenv()
 
 # --- લેટેસ્ટ અને સેફ Path સેટઅપ ---
@@ -21,12 +21,13 @@ UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(TEMPLATE_DIR, exist_ok=True) # ટેમ્પલેટ ફોલ્ડર ન હોય તો ક્રિએટ કરશે
 
 app = FastAPI(title="CyberVault Pro - Production Ready")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
 # ==========================================
-# 🛑 કી હવે સીધી કોડમાં નથી, .env માંથી આવશે 🛑
+# કી હવે .env અથવા Render ના Environment Variables માંથી આવશે
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 # ==========================================
@@ -140,21 +141,25 @@ async def add_watermark(image: UploadFile = File(...), text: str = Form(...)):
     watermarked.save(os.path.join(UPLOAD_DIR, out_filename))
     return {"status": "success", "message": "Watermark Applied", "download_link": f"/download/{out_filename}"}
 
-# --- 5. Reverse Image Search (Google Lens via SerpApi) ---
+# --- 5. Reverse Image Search (Google Lens via SerpApi) - FIXED ---
 @app.post("/api/reverse_search")
-async def reverse_image(image: UploadFile = File(...)):
+async def reverse_image(request: Request, image: UploadFile = File(...)):
     if not SERPAPI_KEY:
-         return {"status": "error", "message": "API Key is missing in .env file."}
+         return {"status": "error", "message": "API Key is missing in Render Environment Variables."}
     
     file_path = os.path.join(UPLOAD_DIR, image.filename)
     with open(file_path, "wb") as f:
-        f.write(await file.read())
+        f.write(await image.read())
         
     try:
+        # ડાયનેમિક લિંક જનરેટ કરો જેથી SerpApi તમારા સર્વર પરથી ફોટો વાંચી શકે
+        base_url = str(request.base_url).rstrip("/")
+        public_image_url = f"{base_url}/download/{image.filename}"
+
         search_url = "https://serpapi.com/search.json"
         params = {
             "engine": "google_lens",
-            "url": "https://i.imgur.com/H1MbG34.jpeg", # Demo public URL
+            "url": public_image_url, # હાર્ડકોડેડ લિંક કાઢીને યુઝરની ફાઈલની લિંક મૂકી
             "api_key": SERPAPI_KEY
         }
         response = requests.get(search_url, params=params)
@@ -206,7 +211,7 @@ async def super_chatbot(request: Request):
     file = form.get("file")
     
     if not model:
-        return {"reply": "CyberBot Error: AI Model બરાબર લોડ થયું નથી. .env માં API Key ચેક કરો."}
+        return {"reply": "CyberBot Error: AI Model બરાબર લોડ થયું નથી. Render માં API Key ચેક કરો."}
     
     try:
         file_context = ""
@@ -233,6 +238,11 @@ async def super_chatbot(request: Request):
 async def serve_frontend(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
+# ==========================================
+# 🛑 પોર્ટ ઇશ્યૂ સોલ્વ કરવા માટેનો સુધારો 🛑
+# ==========================================
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Render ઓટોમેટિકલી પોર્ટ અસાઇન કરે છે, લોકલમાં 8000 લેશે
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
