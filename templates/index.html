@@ -2,7 +2,7 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <title>CyberVault Pro | Production</title>
+    <title>Cybersecurity & Forensics Toolkit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>.tab-content { display: none; } .active-tab { display: block; }</style>
@@ -26,6 +26,10 @@
         
         <div id="forensics" class="tab-content active-tab">
             <h2 class="text-3xl font-bold mb-4 text-blue-400">Advanced Metadata Extractor</h2>
+            <p class="text-gray-400 mb-6 text-sm italic">
+        This tool analyzes the hidden data within images, such as camera settings, 
+        resolution, and geolocation, ensuring digital privacy and forensic verification.
+            </p>
             <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
                 <form onsubmit="submitForm(event, '/api/forensics', 'forensicResult')">
                     <input type="file" name="file" class="w-full bg-gray-700 p-2 rounded mb-4" required>
@@ -37,6 +41,7 @@
 
         <div id="ssl" class="tab-content">
             <h2 class="text-3xl font-bold mb-4 text-green-400">SSL Certificate Checker</h2>
+            <p class="text-gray-400 mb-6 text-sm italic">This utility audits website security by verifying SSL/TLS certificates, checking for expiration dates, and assigning a security grade based on certificate validity</p>
             <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
                 <form onsubmit="submitForm(event, '/api/ssl_check', 'sslResult')">
                     <input type="text" name="hostname" placeholder="google.com" class="w-full bg-gray-700 p-3 rounded mb-4" required>
@@ -48,6 +53,7 @@
 
         <div id="crypto" class="tab-content">
             <h2 class="text-3xl font-bold mb-4 text-red-400">File Encrypt / Decrypt</h2>
+            <p class="text-gray-400 mb-6 text-sm italic">Uses AES-based encryption to secure your files. This ensures that sensitive data remains unreadable to unauthorized users without the correct password</p>
             <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
                 <form onsubmit="submitForm(event, '/api/crypto', 'cryptoResult')">
                     <input type="file" name="file" class="w-full bg-gray-700 p-2 rounded mb-4" required>
@@ -64,6 +70,8 @@
 
         <div id="watermark" class="tab-content">
             <h2 class="text-3xl font-bold mb-4 text-purple-400">Digital Watermarking</h2>
+             <p class="text-gray-400 mb-6 text-sm italic">Protects your intellectual property by embedding a visible watermark text onto your images, helping to establish ownership and prevent unauthorized use</p>
+            <p class="text-gray-400 mb-6 text-sm italic"></p>
             <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
                 <form onsubmit="submitForm(event, '/api/watermark', 'watermarkResult')">
                     <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
@@ -76,6 +84,7 @@
 
         <div id="deepfake" class="tab-content">
             <h2 class="text-3xl font-bold mb-4 text-pink-400">Deepfake Detection</h2>
+            <p class="text-gray-400 mb-6 text-sm italic">Utilizes Error Level Analysis (ELA) to identify discrepancies in image compression, allowing you to detect if an image has been digitally altered or photoshopped."</p>
             <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
                 <form onsubmit="submitForm(event, '/api/deepfake', 'deepfakeResult')">
                     <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
@@ -84,6 +93,45 @@
                 <div id="deepfakeResult" class="mt-4 text-sm text-pink-300 bg-black p-4 rounded hidden break-words"></div>
             </div>
         </div>
+        <div id="info" class="tab-content">
+    <h2 class="text-3xl font-bold mb-8 text-yellow-400">Student Profile</h2>
+    
+    <div class="max-w-md bg-gray-800 rounded-xl shadow-2xl border border-gray-700 overflow-hidden transform transition hover:scale-105">
+        <div class="bg-blue-600 p-6 text-center">
+            <div class="w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center text-4xl text-blue-600 mb-4 shadow-lg">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white">Joshi Harsh Navinbhai</h3>
+            <p class="text-blue-100 italic">CSE Student - 5th Semester</p>
+        </div>
+        
+        <div class="p-6 space-y-4">
+            <div class="flex items-center text-gray-300">
+                <i class="fas fa-envelope w-8 text-yellow-400"></i>
+                <span>hj195344@gmail.com</span>
+            </div>
+            <div class="flex items-center text-gray-300">
+                <i class="fas fa-phone w-8 text-yellow-400"></i>
+                <span>9558825116</span>
+            </div>
+            <div class="flex items-center text-gray-300">
+                <i class="fas fa-university w-8 text-yellow-400"></i>
+                <span>K.D.POLYTECHNIC, PATAN </span>
+            </div>
+            <div class="flex items-start text-gray-300">
+                <i class="fas fa-map-marker-alt w-8 text-yellow-400 mt-1"></i>
+                <span>Opposite T. B. Hospital,Krishnanagar Society,Hemchandracharya North Gujarat University Road,Patan, Gujarat - 384265</span>
+            </div>
+        </div>
+        
+        <div class="bg-gray-700 p-4 text-center text-xs text-gray-400">
+            Diploma in Computer Science & Engineering (CSE)
+        </div>
+    </div>
+</div>
+    <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 p-3 text-center text-gray-500 text-xs border-t border-gray-800">
+    CyberVault Pro © 2026 | Developed for CSE Semester 5  student.
+</footer>
     </main>
 
     <script>
