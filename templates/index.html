@@ -18,10 +18,9 @@
             <button onclick="showTab('forensics')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-camera mr-2"></i> Metadata Extractor</button>
             <button onclick="showTab('ssl')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-lock mr-2"></i> SSL Checker</button>
             <button onclick="showTab('crypto')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-file-shield mr-2"></i> File Encrypt/Decrypt</button>
-            <button onclick="showTab('reverse')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-image mr-2"></i> Reverse Image Search</button>
             <button onclick="showTab('watermark')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-copyright mr-2"></i> Digital Watermark</button>
             <button onclick="showTab('deepfake')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-user-secret mr-2"></i> Deepfake Detector</button>
-            <button onclick="showTab('chatbot')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-robot mr-2"></i> Cyber AI Bot</button>
+           
         </nav>
     </aside>
 
@@ -82,19 +81,9 @@
             </div>
         </div>
 
-        <!-- 5. Reverse Search -->
-        <div id="reverse" class="tab-content">
-            <h2 class="text-3xl font-bold mb-4 text-yellow-400">OSINT Reverse Image Search</h2>
-            <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
-                <form onsubmit="submitForm(event, '/api/reverse_search', 'reverseResult')">
-                    <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
-                    <button type="submit" class="bg-yellow-500 text-black px-6 py-2 rounded font-bold w-full">Search Web</button>
-                </form>
-                <div id="reverseResult" class="mt-4 hidden w-full"></div>
-            </div>
-        </div>
+       
 
-        <!-- 6. Deepfake Detection -->
+        <!-- 5. Deepfake Detection -->
         <div id="deepfake" class="tab-content">
             <h2 class="text-3xl font-bold mb-4 text-pink-400">Deepfake & Alteration Detection</h2>
             <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
@@ -106,23 +95,7 @@
             </div>
         </div>
 
-        <!-- 7. Chatbot with File Upload -->
-        <div id="chatbot" class="tab-content">
-            <h2 class="text-3xl font-bold mb-4 text-indigo-400">CyberSec AI Assistant</h2>
-            <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 h-[600px] flex flex-col">
-                <div id="chatBox" class="flex-1 overflow-y-auto mb-4 space-y-4 border border-gray-700 p-4 rounded break-words">
-                    <div class="text-indigo-300">CyberBot: મને પ્રશ્ન પૂછો અથવા કોઈ લોગ/ટેક્સ્ટ ફાઈલ સ્કેન કરવા આપો.</div>
-                </div>
-                <form onsubmit="submitChat(event)" class="flex gap-2">
-                    <input type="file" id="chatFile" name="file" class="bg-gray-700 p-2 rounded w-48 text-xs">
-                    <input type="text" id="chatMsg" name="message" placeholder="Ask a question..." class="flex-1 bg-gray-700 p-3 rounded" required>
-                    <button type="submit" class="bg-indigo-500 px-6 py-3 rounded font-bold">Send</button>
-                </form>
-            </div>
-        </div>
-
-    </main>
-
+      \
     <script>
         function showTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
@@ -152,62 +125,7 @@
                     return;
                 }
 
-                if(url === '/api/reverse_search' && data.status === "success") {
-                    let html = `<div class="grid grid-cols-2 md:grid-cols-3 gap-6">`;
-                    data.results.forEach(img => {
-                        html += `
-                            <div class="bg-gray-700 p-3 rounded-lg text-center shadow-lg transition hover:scale-105">
-                                <a href="${img.url}" target="_blank">
-                                    <img src="${img.thumbnail}" alt="Match" class="w-full h-32 object-cover rounded mb-3 border border-gray-600">
-                                    <p class="text-sm text-blue-300 hover:underline line-clamp-2">${img.title}</p>
-                                </a>
-                            </div>`;
-                    });
-                    resDiv.innerHTML = html + `</div>`;
-                    return;
-                }
-
-                let outputHTML = `<pre class="font-mono text-sm bg-black p-4 rounded">${JSON.stringify(data, null, 2)}</pre>`;
-                if(data.download_link) {
-                    outputHTML = `<div class="bg-gray-800 p-4 rounded text-center border border-green-500">
-                        <p class="text-green-400 mb-4">${data.message}</p>
-                        <a href="${data.download_link}" download class="bg-green-600 text-white font-bold py-2 px-6 rounded transition inline-block">Download File</a>
-                    </div>`;
-                }
-                resDiv.innerHTML = outputHTML;
-
-            } catch (err) {
-                resDiv.innerHTML = `<span class="text-red-500">Error connecting to server.</span>`;
-            }
-        }
-
-        async function submitChat(e) {
-            e.preventDefault();
-            const input = document.getElementById('chatMsg');
-            const fileInput = document.getElementById('chatFile');
-            const chatBox = document.getElementById('chatBox');
-            const msg = input.value;
-            
-            let displayMsg = msg;
-            if(fileInput.files.length > 0) {
-                displayMsg += ` <br><span class="text-xs text-yellow-300">[Attached: ${fileInput.files[0].name}]</span>`;
-            }
-
-            chatBox.innerHTML += `<div class="text-right text-white bg-gray-700 p-3 rounded-lg inline-block float-right clear-both mb-3 max-w-[80%]">${displayMsg}</div>`;
-            input.value = '';
-
-            const formData = new FormData();
-            formData.append("message", msg);
-            if(fileInput.files.length > 0) formData.append("file", fileInput.files[0]);
-            
-            const res = await fetch('/api/chat', { method: 'POST', body: formData });
-            const data = await res.json();
-            
-            const formattedReply = data.reply.replace(/\n/g, "<br>");
-            chatBox.innerHTML += `<div class="text-left text-indigo-300 bg-gray-800 border border-indigo-500 p-3 rounded-lg inline-block float-left clear-both mb-3 max-w-[80%]">${formattedReply}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-            fileInput.value = "";
-        }
+                
     </script>
 </body>
 </html>
