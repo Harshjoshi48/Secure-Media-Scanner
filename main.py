@@ -3,15 +3,13 @@ from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from cryptography.fernet import Fernet
 from PIL import Image, ImageDraw, ImageChops, ExifTags
-import requests
 import os
 import socket
 import ssl
 import base64
 from datetime import datetime
-from dotenv import load_dotenv
 
-# .env ફાઈલમાંથી ડેટા લોડ કરો (લોકલ ટેસ્ટિંગ માટે)
+
 
 
 # --- લેટેસ્ટ અને સેફ Path સેટઅપ ---
