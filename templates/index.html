@@ -9,7 +9,6 @@
 </head>
 <body class="bg-gray-900 text-gray-100 flex h-screen overflow-hidden font-sans">
 
-    <!-- Sidebar Menu -->
     <aside class="w-72 bg-gray-800 border-r border-gray-700 flex flex-col">
         <div class="p-6 border-b border-gray-700 text-2xl font-bold text-blue-500">
             <i class="fas fa-shield-virus mr-2"></i>CyberVault Pro
@@ -17,17 +16,14 @@
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
             <button onclick="showTab('forensics')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-camera mr-2"></i> Metadata Extractor</button>
             <button onclick="showTab('ssl')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-lock mr-2"></i> SSL Checker</button>
-            <button onclick="showTab('crypto')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-file-shield mr-2"></i> File Encrypt/Decrypt</button>
-            <button onclick="showTab('watermark')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-copyright mr-2"></i> Digital Watermark</button>
+            <button onclick="showTab('crypto')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-file-shield mr-2"></i> Encrypt/Decrypt</button>
+            <button onclick="showTab('watermark')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-copyright mr-2"></i> Watermark</button>
             <button onclick="showTab('deepfake')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-user-secret mr-2"></i> Deepfake Detector</button>
-           
         </nav>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto p-10 bg-gray-900">
         
-        <!-- 1. Metadata Extractor -->
         <div id="forensics" class="tab-content active-tab">
             <h2 class="text-3xl font-bold mb-4 text-blue-400">Advanced Metadata Extractor</h2>
             <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
@@ -35,11 +31,10 @@
                     <input type="file" name="file" class="w-full bg-gray-700 p-2 rounded mb-4" required>
                     <button type="submit" class="bg-blue-500 px-6 py-2 rounded font-bold w-full">Deep Extract Data</button>
                 </form>
-                <div id="forensicResult" class="mt-4 text-sm text-green-300 bg-black p-4 rounded hidden overflow-x-auto break-words whitespace-pre-wrap max-h-96 overflow-y-auto"></div>
+                <div id="forensicResult" class="mt-4 text-sm text-green-300 bg-black p-4 rounded hidden overflow-x-auto"></div>
             </div>
         </div>
 
-        <!-- 2. SSL Checker -->
         <div id="ssl" class="tab-content">
             <h2 class="text-3xl font-bold mb-4 text-green-400">SSL Certificate Checker</h2>
             <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
@@ -51,7 +46,6 @@
             </div>
         </div>
 
-        <!-- 3. File Crypto -->
         <div id="crypto" class="tab-content">
             <h2 class="text-3xl font-bold mb-4 text-red-400">File Encrypt / Decrypt</h2>
             <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
@@ -68,7 +62,6 @@
             </div>
         </div>
 
-        <!-- 4. Watermark -->
         <div id="watermark" class="tab-content">
             <h2 class="text-3xl font-bold mb-4 text-purple-400">Digital Watermarking</h2>
             <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
@@ -81,11 +74,8 @@
             </div>
         </div>
 
-       
-
-        <!-- 5. Deepfake Detection -->
         <div id="deepfake" class="tab-content">
-            <h2 class="text-3xl font-bold mb-4 text-pink-400">Deepfake & Alteration Detection</h2>
+            <h2 class="text-3xl font-bold mb-4 text-pink-400">Deepfake Detection</h2>
             <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
                 <form onsubmit="submitForm(event, '/api/deepfake', 'deepfakeResult')">
                     <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
@@ -94,8 +84,8 @@
                 <div id="deepfakeResult" class="mt-4 text-sm text-pink-300 bg-black p-4 rounded hidden break-words"></div>
             </div>
         </div>
+    </main>
 
-      \
     <script>
         function showTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
@@ -106,26 +96,24 @@
             e.preventDefault();
             const resDiv = document.getElementById(resultId);
             resDiv.classList.remove('hidden');
-            resDiv.innerHTML = `<span class="text-yellow-400">Processing on Server, please wait...</span>`;
+            resDiv.innerHTML = `<span class="text-yellow-400">Processing... please wait.</span>`;
 
             const formData = new FormData(e.target);
             try {
                 const res = await fetch(url, { method: 'POST', body: formData });
                 const data = await res.json();
                 
-                if(url === '/api/ssl_check' && data.status === "success") {
-                    resDiv.innerHTML = `
-                        <div class="border border-green-500 p-4 rounded bg-gray-900">
-                            <h3 class="text-2xl font-bold text-green-400 text-center mb-2">SECURITY GRADE: ${data.SECURITY_GRADE}</h3>
-                            <p class="text-center text-white font-bold mb-4">${data.STATUS}</p>
-                            <p><strong>DOMAIN:</strong> ${data.DOMAIN}</p>
-                            <p><strong>ISSUER:</strong> ${data.ISSUER}</p>
-                            <p><strong>DAYS REMAINING:</strong> ${data.DAYS_REMAINING}</p>
-                        </div>`;
-                    return;
+                if (url === '/api/ssl_check' && data.status === "success") {
+                    resDiv.innerHTML = `<div class="p-4 bg-gray-900 border border-green-500">Security Grade: ${data.SECURITY_GRADE}<br>Domain: ${data.DOMAIN}</div>`;
+                } else if (data.download_link) {
+                    resDiv.innerHTML = `<a href="${data.download_link}" download class="text-green-400 font-bold underline">Download Processed File</a>`;
+                } else {
+                    resDiv.innerHTML = `<pre class="text-xs">${JSON.stringify(data, null, 2)}</pre>`;
                 }
-
-                
+            } catch (err) {
+                resDiv.innerHTML = `<span class="text-red-500">Server Error.</span>`;
+            }
+        }
     </script>
 </body>
 </html>
