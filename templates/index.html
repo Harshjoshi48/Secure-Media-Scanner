@@ -19,6 +19,8 @@
             <button onclick="showTab('crypto')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-file-shield mr-2"></i> Encrypt/Decrypt</button>
             <button onclick="showTab('watermark')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-copyright mr-2"></i> Watermark</button>
             <button onclick="showTab('deepfake')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-user-secret mr-2"></i> Deepfake Detector</button>
+            <button onclick="showTab('info')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-info-circle mr-2"></i> Project & Student Info
+</button>
         </nav>
     </aside>
 
@@ -141,27 +143,37 @@
         }
 
         async function submitForm(e, url, resultId) {
-            e.preventDefault();
-            const resDiv = document.getElementById(resultId);
-            resDiv.classList.remove('hidden');
-            resDiv.innerHTML = `<span class="text-yellow-400">Processing... please wait.</span>`;
+    e.preventDefault();
+    const resDiv = document.getElementById(resultId);
+    resDiv.classList.remove('hidden');
+    resDiv.innerHTML = `<span class="text-yellow-400">Processing... please wait.</span>`;
 
-            const formData = new FormData(e.target);
-            try {
-                const res = await fetch(url, { method: 'POST', body: formData });
-                const data = await res.json();
-                
-                if (url === '/api/ssl_check' && data.status === "success") {
-                    resDiv.innerHTML = `<div class="p-4 bg-gray-900 border border-green-500">Security Grade: ${data.SECURITY_GRADE}<br>Domain: ${data.DOMAIN}</div>`;
-                } else if (data.download_link) {
-                    resDiv.innerHTML = `<a href="${data.download_link}" download class="text-green-400 font-bold underline">Download Processed File</a>`;
-                } else {
-                    resDiv.innerHTML = `<pre class="text-xs">${JSON.stringify(data, null, 2)}</pre>`;
-                }
-            } catch (err) {
-                resDiv.innerHTML = `<span class="text-red-500">Server Error.</span>`;
+    const formData = new FormData(e.target);
+    try {
+        const res = await fetch(url, { method: 'POST', body: formData });
+
+        // જો યુઆરએલ ક્રિપ્ટો (Encryption/Decryption) કે વોટરમાર્ક હોય
+        if (url === '/api/crypto' || url === '/api/watermark') {
+            const blob = await res.blob(); // ફાઈલને બાઈનરી ડેટા (Blob) તરીકે લો
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = "processed_file"; // ફાઈલનું નામ
+            link.click();
+            resDiv.innerHTML = `<span class="text-green-400">File processed and download started!</span>`;
+        } 
+        // જો SSL ચેક જેવું સામાન્ય JSON રિઝલ્ટ હોય
+        else {
+            const data = await res.json();
+            if (url === '/api/ssl_check' && data.status === "success") {
+                resDiv.innerHTML = `<div class="p-4 bg-gray-900 border border-green-500">Security Grade: ${data.SECURITY_GRADE}<br>Domain: ${data.DOMAIN}</div>`;
+            } else {
+                resDiv.innerHTML = `<pre class="text-xs">${JSON.stringify(data, null, 2)}</pre>`;
             }
         }
+    } catch (err) {
+        resDiv.innerHTML = `<span class="text-red-500">Error: Could not process request.</span>`;
+    }
+}
     </script>
 </body>
 </html>
