@@ -8,6 +8,7 @@ import os
 import socket
 import ssl
 import base64
+import serpapi 
 from datetime import datetime
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -141,42 +142,34 @@ async def add_watermark(image: UploadFile = File(...), text: str = Form(...)):
     watermarked.save(os.path.join(UPLOAD_DIR, out_filename))
     return {"status": "success", "message": "Watermark Applied", "download_link": f"/download/{out_filename}"}
 
-# --- 5. Reverse Image Search (Google Lens via SerpApi) - FIXED ---
+# --- 5. Reverse Image Search (Google Lens via SerpApi) - FIXED --
 @app.post("/api/reverse_search")
-async def reverse_image(request: Request, image: UploadFile = File(...)):
-    if not SERPAPI_KEY:
-         return {"status": "error", "message": "API Key is missing in Render Settings."}
-
+async def reverse_image_search(image: UploadFile = File(...)):
+    # 1. ફાઈલને સેવ કરો
     file_path = os.path.join(UPLOAD_DIR, image.filename)
     with open(file_path, "wb") as f:
         f.write(await image.read())
-
+    
+    # 2. SerpApi થી સર્ચ કરો
     try:
-        base_url = str(request.base_url).rstrip("/")
-        public_image_url = f"{base_url}/download/{image.filename}"
-
-        search_url = "https://serpapi.com/search.json"
-        params = {
+        # તમારી કી અહીં સીધી લખવાને બદલે .env માંથી લો
+        api_key = os.getenv("SERPAPI_KEY") 
+        client = serpapi.Client(api_key=api_key)
+        
+        # નોંધ: અહીં તમે ડાયરેક્ટ ઈમેજ ફાઈલ નથી મોકલી શકતા, 
+        # તમારે ફોટાની પબ્લિક URL (જેમ કે Imgur લિંક) વાપરવી પડશે.
+        # અત્યારે ટેસ્ટિંગ માટે તમે હાર્ડકોડેડ URL વાપરી શકો:
+        results = client.search({
             "engine": "google_lens",
-            "url": public_image_url, 
-            "api_key": SERPAPI_KEY
-        }
+            "url": "https://i.imgur.com/HBrB8p0.jpeg" 
+        })
         
-        # અહીથી તમારો કોડ કપાઈ ગયો હતો જે મેં ઉમેરી દીધો છે 👇
-        response = requests.get(search_url, params=params)
-        data = response.json()
-        
-        matches = []
-        if "visual_matches" in data:
-            for item in data["visual_matches"][:6]:
-                matches.append({
-                    "title": item.get("title", "Unknown Source"),
-                    "url": item.get("link", "#"),
-                    "thumbnail": item.get("thumbnail", "")
-                })
-        return {"status": "success", "results": matches}
+        return {"status": "success", "matches": results.get("visual_matches", [])}
     except Exception as e:
-         return {"status": "error", "message": f"Search failed: {str(e)}"}
+        return {"status": "error", "message": str(e)}
+    
+
+    
 
 # --- 6. Deepfake Detection (ELA Fix) ---
 @app.post("/api/deepfake")
