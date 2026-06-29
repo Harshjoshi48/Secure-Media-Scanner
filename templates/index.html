@@ -110,42 +110,73 @@
         CyberVault Pro © 2026 | Developed for CSE Semester 5 Student
     </footer>
 
-    <script>
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
-            document.getElementById(tabId).classList.add('active-tab');
-        }
+ <script>
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+        document.getElementById(tabId).classList.add('active-tab');
+    }
 
-        async function submitForm(e, url, resultId) {
-            e.preventDefault();
-            const resDiv = document.getElementById(resultId);
-            resDiv.classList.remove('hidden');
-            resDiv.innerHTML = `<span class="text-yellow-400">Processing... please wait.</span>`;
+    async function submitForm(e, url, resultId) {
+        e.preventDefault();
+        const resDiv = document.getElementById(resultId);
+        resDiv.classList.remove('hidden');
+        resDiv.innerHTML = `<span class="text-yellow-400"><i class="fas fa-spinner fa-spin mr-2"></i>Processing... please wait.</span>`;
 
-            const formData = new FormData(e.target);
-            try {
-                const res = await fetch(url, { method: 'POST', body: formData });
-                if (url === '/api/crypto' || url === '/api/watermark' || url === '/api/deepfake') {
-                    // For file download responses
-                    const blob = await res.blob();
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = "processed_file";
-                    link.click();
-                    resDiv.innerHTML = `<span class="text-green-400">Process successful! Download started.</span>`;
-                } else {
-                    // For JSON responses
-                    const data = await res.json();
-                    if (url === '/api/ssl_check') {
-                        resDiv.innerHTML = `<div class="p-4 bg-gray-900 border border-green-500">Grade: ${data.SECURITY_GRADE}<br>Domain: ${data.DOMAIN}</div>`;
-                    } else {
-                        resDiv.innerHTML = `<pre class="text-xs">${JSON.stringify(data, null, 2)}</pre>`;
-                    }
+        const formData = new FormData(e.target);
+        try {
+            const res = await fetch(url, { method: 'POST', body: formData });
+            
+            // ૧. ફાઈલ પ્રોસેસિંગ (ફક્ત Crypto અને Watermark માટે - અહિં ઓટોમેટિક ડાઉનલોડ બંધ કર્યું છે)
+            if (url === '/api/crypto' || url === '/api/watermark') {
+                const blob = await res.blob();
+                const fileUrl = URL.createObjectURL(blob);
+                
+                resDiv.innerHTML = `
+                    <div class="p-6 bg-gray-900 border border-green-500 rounded text-center">
+                        <p class="text-green-400 font-bold mb-4">File Processed Successfully!</p>
+                        <a href="${fileUrl}" download="CyberVault_File" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition inline-block">
+                            <i class="fas fa-download mr-2"></i> Download Processed File
+                        </a>
+                    </div>`;
+            } 
+            // ૨. બાકીના બધા (JSON) રિઝલ્ટ બોક્સમાં બતાવવા માટે (SSL, Forensics, Deepfake)
+            else {
+                const data = await res.json();
+                
+                if (data.status === "error") {
+                    resDiv.innerHTML = `<span class="text-red-500 font-bold"><i class="fas fa-exclamation-triangle mr-2"></i> Error: ${data.message}</span>`;
+                    return;
                 }
-            } catch (err) {
-                resDiv.innerHTML = `<span class="text-red-500">Error processing request.</span>`;
+
+                // SSL Checker નું પ્રોફેશનલ કમાન્ડ પ્રોમ્પ્ટ આઉટપુટ
+                if (url === '/api/ssl_check') {
+                    resDiv.innerHTML = `
+                        <div class="p-4 bg-black border border-green-500 rounded font-mono text-green-400 text-left shadow-inner">
+                            <p>> <strong>DOMAIN:</strong> ${data.DOMAIN}</p>
+                            <p>> <strong>STATUS:</strong> ${data.STATUS}</p>
+                            <p>> <strong>ISSUER:</strong> ${data.ISSUER}</p>
+                            <p>> <strong>GRADE:</strong> <span class="text-yellow-400 font-bold">${data.SECURITY_GRADE}</span></p>
+                            <p>> <strong>VALIDITY:</strong> ${data.DAYS_REMAINING}</p>
+                        </div>`;
+                } 
+                // Deepfake Detection નું પ્રોફેશનલ આઉટપુટ (હવે ડાઉનલોડ નહિ થાય!)
+                else if (url === '/api/deepfake') {
+                    resDiv.innerHTML = `
+                        <div class="p-4 bg-black border border-pink-500 rounded font-mono text-pink-400 text-left shadow-inner">
+                            <p>> <strong>ANALYSIS TYPE:</strong> Error Level Analysis (ELA)</p>
+                            <p>> <strong>PIXEL MISMATCH SCORE:</strong> ${data.score}</p>
+                            <p>> <strong>FINAL RESULT:</strong> <span class="text-white font-bold">${data.analysis}</span></p>
+                        </div>`;
+                }
+                // Metadata Forensics માટે
+                else {
+                    resDiv.innerHTML = `<pre class="text-xs text-green-300 font-mono text-left bg-black p-4 rounded border border-gray-700">${JSON.stringify(data, null, 2)}</pre>`;
+                }
             }
+        } catch (err) {
+            resDiv.innerHTML = `<span class="text-red-500 font-bold">Error processing request. Server might be down.</span>`;
         }
-    </script>
+    }
+</script>
 </body>
 </html>
