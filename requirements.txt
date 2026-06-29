@@ -1,9 +1,5 @@
 fastapi
 uvicorn
 python-multipart
-jinja2
 cryptography
 pillow
-requests
-google-generativeai
-python-dotenv
