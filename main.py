@@ -21,7 +21,7 @@ UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(TEMPLATE_DIR, exist_ok=True) # ટેમ્પલેટ ફોલ્ડર ન હોય તો ક્રિએટ કરશે
+os.makedirs(TEMPLATE_DIR, exist_ok=True) 
 
 app = FastAPI(title="CyberVault Pro - Production Ready")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
@@ -145,23 +145,39 @@ async def add_watermark(image: UploadFile = File(...), text: str = Form(...)):
 @app.post("/api/reverse_search")
 async def reverse_image(request: Request, image: UploadFile = File(...)):
     if not SERPAPI_KEY:
-         return {"status": "error", "message": "API Key is missing in .env file."}
+         return {"status": "error", "message": "API Key is missing in Render Settings."}
 
     file_path = os.path.join(UPLOAD_DIR, image.filename)
     with open(file_path, "wb") as f:
-        f.write(await image.read()) # file.read() ni jagya e image.read() karyu
+        f.write(await image.read())
 
     try:
-        # Render na server parथी image ni link banavse
         base_url = str(request.base_url).rstrip("/")
         public_image_url = f"{base_url}/download/{image.filename}"
 
         search_url = "https://serpapi.com/search.json"
         params = {
             "engine": "google_lens",
-            "url": public_image_url, # Navo dynamic URL
+            "url": public_image_url, 
             "api_key": SERPAPI_KEY
         }
+        
+        # અહીથી તમારો કોડ કપાઈ ગયો હતો જે મેં ઉમેરી દીધો છે 👇
+        response = requests.get(search_url, params=params)
+        data = response.json()
+        
+        matches = []
+        if "visual_matches" in data:
+            for item in data["visual_matches"][:6]:
+                matches.append({
+                    "title": item.get("title", "Unknown Source"),
+                    "url": item.get("link", "#"),
+                    "thumbnail": item.get("thumbnail", "")
+                })
+        return {"status": "success", "results": matches}
+    except Exception as e:
+         return {"status": "error", "message": f"Search failed: {str(e)}"}
+
 # --- 6. Deepfake Detection (ELA Fix) ---
 @app.post("/api/deepfake")
 async def detect_deepfake(image: UploadFile = File(...)):
@@ -228,6 +244,5 @@ async def serve_frontend(request: Request):
 # ==========================================
 if __name__ == "__main__":
     import uvicorn
-    # Render ઓટોમેટિકલી પોર્ટ અસાઇન કરે છે, લોકલમાં 8000 લેશે
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
