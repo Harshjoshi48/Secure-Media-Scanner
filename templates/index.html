@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <title>CyberVault Pro | Production</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>.tab-content { display: none; } .active-tab { display: block; }</style>
+</head>
+<body class="bg-gray-900 text-gray-100 flex h-screen overflow-hidden font-sans">
+
+    <!-- Sidebar Menu -->
+    <aside class="w-72 bg-gray-800 border-r border-gray-700 flex flex-col">
+        <div class="p-6 border-b border-gray-700 text-2xl font-bold text-blue-500">
+            <i class="fas fa-shield-virus mr-2"></i>CyberVault Pro
+        </div>
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button onclick="showTab('forensics')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-camera mr-2"></i> Metadata Extractor</button>
+            <button onclick="showTab('ssl')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-lock mr-2"></i> SSL Checker</button>
+            <button onclick="showTab('crypto')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-file-shield mr-2"></i> File Encrypt/Decrypt</button>
+            <button onclick="showTab('reverse')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-image mr-2"></i> Reverse Image Search</button>
+            <button onclick="showTab('watermark')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-copyright mr-2"></i> Digital Watermark</button>
+            <button onclick="showTab('deepfake')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-user-secret mr-2"></i> Deepfake Detector</button>
+            <button onclick="showTab('chatbot')" class="w-full text-left p-3 rounded hover:bg-gray-700"><i class="fas fa-robot mr-2"></i> Cyber AI Bot</button>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-10 bg-gray-900">
+        
+        <!-- 1. Metadata Extractor -->
+        <div id="forensics" class="tab-content active-tab">
+            <h2 class="text-3xl font-bold mb-4 text-blue-400">Advanced Metadata Extractor</h2>
+            <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
+                <form onsubmit="submitForm(event, '/api/forensics', 'forensicResult')">
+                    <input type="file" name="file" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                    <button type="submit" class="bg-blue-500 px-6 py-2 rounded font-bold w-full">Deep Extract Data</button>
+                </form>
+                <div id="forensicResult" class="mt-4 text-sm text-green-300 bg-black p-4 rounded hidden overflow-x-auto break-words whitespace-pre-wrap max-h-96 overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- 2. SSL Checker -->
+        <div id="ssl" class="tab-content">
+            <h2 class="text-3xl font-bold mb-4 text-green-400">SSL Certificate Checker</h2>
+            <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
+                <form onsubmit="submitForm(event, '/api/ssl_check', 'sslResult')">
+                    <input type="text" name="hostname" placeholder="google.com" class="w-full bg-gray-700 p-3 rounded mb-4" required>
+                    <button type="submit" class="bg-green-500 px-6 py-2 rounded font-bold w-full">Analyze SSL</button>
+                </form>
+                <div id="sslResult" class="mt-4 hidden"></div>
+            </div>
+        </div>
+
+        <!-- 3. File Crypto -->
+        <div id="crypto" class="tab-content">
+            <h2 class="text-3xl font-bold mb-4 text-red-400">File Encrypt / Decrypt</h2>
+            <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
+                <form onsubmit="submitForm(event, '/api/crypto', 'cryptoResult')">
+                    <input type="file" name="file" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                    <input type="password" name="password" placeholder="Secret Key (Password)" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                    <select name="action" class="w-full bg-gray-700 p-2 rounded mb-4">
+                        <option value="encrypt">Encrypt (Lock)</option>
+                        <option value="decrypt">Decrypt (Unlock)</option>
+                    </select>
+                    <button type="submit" class="bg-red-500 px-6 py-2 rounded font-bold w-full">Process File</button>
+                </form>
+                <div id="cryptoResult" class="mt-4 hidden"></div>
+            </div>
+        </div>
+
+        <!-- 4. Watermark -->
+        <div id="watermark" class="tab-content">
+            <h2 class="text-3xl font-bold mb-4 text-purple-400">Digital Watermarking</h2>
+            <div class="bg-gray-800 p-6 rounded shadow max-w-2xl border border-gray-700">
+                <form onsubmit="submitForm(event, '/api/watermark', 'watermarkResult')">
+                    <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                    <input type="text" name="text" placeholder="Watermark Text" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                    <button type="submit" class="bg-purple-500 px-6 py-2 rounded font-bold w-full">Apply Watermark</button>
+                </form>
+                <div id="watermarkResult" class="mt-4 hidden"></div>
+            </div>
+        </div>
+
+        <!-- 5. Reverse Search -->
+        <div id="reverse" class="tab-content">
+            <h2 class="text-3xl font-bold mb-4 text-yellow-400">OSINT Reverse Image Search</h2>
+            <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
+                <form onsubmit="submitForm(event, '/api/reverse_search', 'reverseResult')">
+                    <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                    <button type="submit" class="bg-yellow-500 text-black px-6 py-2 rounded font-bold w-full">Search Web</button>
+                </form>
+                <div id="reverseResult" class="mt-4 hidden w-full"></div>
+            </div>
+        </div>
+
+        <!-- 6. Deepfake Detection -->
+        <div id="deepfake" class="tab-content">
+            <h2 class="text-3xl font-bold mb-4 text-pink-400">Deepfake & Alteration Detection</h2>
+            <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 w-full">
+                <form onsubmit="submitForm(event, '/api/deepfake', 'deepfakeResult')">
+                    <input type="file" name="image" class="w-full bg-gray-700 p-2 rounded mb-4" required>
+                    <button type="submit" class="bg-pink-500 px-6 py-2 rounded font-bold w-full">Run Analysis</button>
+                </form>
+                <div id="deepfakeResult" class="mt-4 text-sm text-pink-300 bg-black p-4 rounded hidden break-words"></div>
+            </div>
+        </div>
+
+        <!-- 7. Chatbot with File Upload -->
+        <div id="chatbot" class="tab-content">
+            <h2 class="text-3xl font-bold mb-4 text-indigo-400">CyberSec AI Assistant</h2>
+            <div class="bg-gray-800 p-6 rounded shadow border border-gray-700 h-[600px] flex flex-col">
+                <div id="chatBox" class="flex-1 overflow-y-auto mb-4 space-y-4 border border-gray-700 p-4 rounded break-words">
+                    <div class="text-indigo-300">CyberBot: મને પ્રશ્ન પૂછો અથવા કોઈ લોગ/ટેક્સ્ટ ફાઈલ સ્કેન કરવા આપો.</div>
+                </div>
+                <form onsubmit="submitChat(event)" class="flex gap-2">
+                    <input type="file" id="chatFile" name="file" class="bg-gray-700 p-2 rounded w-48 text-xs">
+                    <input type="text" id="chatMsg" name="message" placeholder="Ask a question..." class="flex-1 bg-gray-700 p-3 rounded" required>
+                    <button type="submit" class="bg-indigo-500 px-6 py-3 rounded font-bold">Send</button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        async function submitForm(e, url, resultId) {
+            e.preventDefault();
+            const resDiv = document.getElementById(resultId);
+            resDiv.classList.remove('hidden');
+            resDiv.innerHTML = `<span class="text-yellow-400">Processing on Server, please wait...</span>`;
+
+            const formData = new FormData(e.target);
+            try {
+                const res = await fetch(url, { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                if(url === '/api/ssl_check' && data.status === "success") {
+                    resDiv.innerHTML = `
+                        <div class="border border-green-500 p-4 rounded bg-gray-900">
+                            <h3 class="text-2xl font-bold text-green-400 text-center mb-2">SECURITY GRADE: ${data.SECURITY_GRADE}</h3>
+                            <p class="text-center text-white font-bold mb-4">${data.STATUS}</p>
+                            <p><strong>DOMAIN:</strong> ${data.DOMAIN}</p>
+                            <p><strong>ISSUER:</strong> ${data.ISSUER}</p>
+                            <p><strong>DAYS REMAINING:</strong> ${data.DAYS_REMAINING}</p>
+                        </div>`;
+                    return;
+                }
+
+                if(url === '/api/reverse_search' && data.status === "success") {
+                    let html = `<div class="grid grid-cols-2 md:grid-cols-3 gap-6">`;
+                    data.results.forEach(img => {
+                        html += `
+                            <div class="bg-gray-700 p-3 rounded-lg text-center shadow-lg transition hover:scale-105">
+                                <a href="${img.url}" target="_blank">
+                                    <img src="${img.thumbnail}" alt="Match" class="w-full h-32 object-cover rounded mb-3 border border-gray-600">
+                                    <p class="text-sm text-blue-300 hover:underline line-clamp-2">${img.title}</p>
+                                </a>
+                            </div>`;
+                    });
+                    resDiv.innerHTML = html + `</div>`;
+                    return;
+                }
+
+                let outputHTML = `<pre class="font-mono text-sm bg-black p-4 rounded">${JSON.stringify(data, null, 2)}</pre>`;
+                if(data.download_link) {
+                    outputHTML = `<div class="bg-gray-800 p-4 rounded text-center border border-green-500">
+                        <p class="text-green-400 mb-4">${data.message}</p>
+                        <a href="${data.download_link}" download class="bg-green-600 text-white font-bold py-2 px-6 rounded transition inline-block">Download File</a>
+                    </div>`;
+                }
+                resDiv.innerHTML = outputHTML;
+
+            } catch (err) {
+                resDiv.innerHTML = `<span class="text-red-500">Error connecting to server.</span>`;
+            }
+        }
+
+        async function submitChat(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatMsg');
+            const fileInput = document.getElementById('chatFile');
+            const chatBox = document.getElementById('chatBox');
+            const msg = input.value;
+            
+            let displayMsg = msg;
+            if(fileInput.files.length > 0) {
+                displayMsg += ` <br><span class="text-xs text-yellow-300">[Attached: ${fileInput.files[0].name}]</span>`;
+            }
+
+            chatBox.innerHTML += `<div class="text-right text-white bg-gray-700 p-3 rounded-lg inline-block float-right clear-both mb-3 max-w-[80%]">${displayMsg}</div>`;
+            input.value = '';
+
+            const formData = new FormData();
+            formData.append("message", msg);
+            if(fileInput.files.length > 0) formData.append("file", fileInput.files[0]);
+            
+            const res = await fetch('/api/chat', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            const formattedReply = data.reply.replace(/\n/g, "<br>");
+            chatBox.innerHTML += `<div class="text-left text-indigo-300 bg-gray-800 border border-indigo-500 p-3 rounded-lg inline-block float-left clear-both mb-3 max-w-[80%]">${formattedReply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            fileInput.value = "";
+        }
+    </script>
+</body>
+</html>
