@@ -9,6 +9,8 @@ import ssl
 import base64
 from datetime import datetime
 import uvicorn
+import asyncio
+import httpx
 
 # --- Path Setup ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,6 +22,28 @@ os.makedirs(TEMPLATE_DIR, exist_ok=True)
 
 app = FastAPI(title="CyberVault Pro - Production Ready")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
+
+# ==========================================
+# --- ANTI-SLEEP (KEEP-AWAKE) LOGIC ---
+# ==========================================
+KEEP_ALIVE_URL = "https://secure-media-scanner.onrender.com/"  
+
+async def keep_awake():
+    
+    while True:
+        await asyncio.sleep(600)  
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.get(KEEP_ALIVE_URL)
+                print("✅ Keep-alive ping sent successfully! App is awake.")
+        except Exception as e:
+            print(f"❌ Ping failed: {e}")
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(keep_awake())
+# ==========================================
+
 
 # --- Frontend Route ---
 @app.get("/", response_class=HTMLResponse)
